@@ -6,12 +6,12 @@ import requests
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
+install('streamlit')
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-install('streamlit')
 
 API_KEY = "PKG95PV0R6DI0C2G522P"
 API_SECRET = "knWqSpYCGrkQopBig8K4dIWYNASADqzcjgalRx8O"
