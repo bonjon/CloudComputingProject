@@ -1,14 +1,6 @@
 import subprocess
 import sys
 import requests
-
-
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-install("streamlit")
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -27,8 +19,6 @@ headers = {"Apca-Api-Key-Id": API_KEY, "Apca-Api-Secret-Key": API_SECRET}
 response = requests.get(
     url=BASE_URL + "v2/stocks/bars?", headers=headers, params=parameters
 )
-st.title("Data Analytics")
-
 SYMBOLS = {
     "Apple": "AAPL",
     "Tesla": "TSLA",
@@ -45,6 +35,4 @@ option = st.selectbox(
 st.write("You selected:", option)
 
 df = pd.DataFrame.from_dict(response.json()["bars"][SYMBOLS[option]])
-fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
-fig.update_xaxes(type="category")
-st.plotly_chart(fig)
+st.dataframe(df)
