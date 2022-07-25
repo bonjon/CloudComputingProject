@@ -33,7 +33,6 @@ option = st.selectbox(
     (SYMBOLS.keys()),
 )
 
-
 def aggrid_interactive_table(df: pd.DataFrame):
     """Creates an st-aggrid interactive table based on a dataframe.
 
@@ -60,7 +59,6 @@ def aggrid_interactive_table(df: pd.DataFrame):
     )
 
     return selection
-
 
 st.write("You selected:", option)
 df = pd.DataFrame.from_dict(response.json()["bars"][SYMBOLS[option]])
