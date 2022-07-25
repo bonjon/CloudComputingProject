@@ -30,6 +30,7 @@ csv_buffer = StringIO()
 data.to_csv(csv_buffer)
 print(csv_buffer.getvalue())
 print(type(data))
+print(data.head())
 
 # s3_resource = boto3.resource("s3")
 # s3_resource.Object(bucket, "df.json").put(Body=csv_buffer.getvalue())
