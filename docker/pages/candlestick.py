@@ -31,8 +31,12 @@ SYMBOLS = {
 }
 
 option = st.selectbox(
-    "Select the Company Stock that you want to see",
+    "Select the Company Stock you want to see:",
     (SYMBOLS.keys()),
+)
+option_candlestick = st.selectbox(
+    "Select the graph type you want to see:",
+    ["Candlestick", "OHLC"],
 )
 
 st.write("You selected:", option)
@@ -45,6 +49,21 @@ fig = go.Figure(
             x=df["t"], open=df["o"], high=df["h"], low=df["l"], close=df["c"]
         )
     ]
+    if option_candlestick == "Candlestick"
+    else go.Ohlc(x=df["t"], open=df["o"], high=df["h"], low=df["l"], close=df["c"])
 )
-fig.update_layout(xaxis_rangeslider_visible=False)
+fig.update_xaxes(
+    rangeslider_visible=True,
+    rangeselector=dict(
+        buttons=list(
+            [
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="backward"),
+                dict(count=1, label="YTD", step="year", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all"),
+            ]
+        )
+    ),
+)
 st.plotly_chart(fig)

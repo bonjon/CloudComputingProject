@@ -38,7 +38,7 @@ SYMBOLS = {
 }
 
 option = st.selectbox(
-    "Select the Company Stock that you want to see",
+    "Select the Company Stock you want to see:",
     (SYMBOLS.keys()),
 )
 
@@ -46,7 +46,28 @@ st.write("You selected:", option)
 
 df = pd.DataFrame.from_dict(response.json()["bars"][SYMBOLS[option]])
 fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
-fig.update_xaxes(type="category")
+# fig.update_xaxes(type="category")
+fig.update_xaxes(
+    rangeslider_visible=True,
+    rangeselector=dict(
+        buttons=list(
+            [
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="backward"),
+                dict(count=1, label="YTD", step="year", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all"),
+            ]
+        )
+    ),
+)
+# to hide the weeends and holidays
+""" fig.update_xaxes(
+    rangebreaks=[
+        dict(bounds=["sat", "mon"]), #hide weekends
+        dict(values=["2015-12-25", "2016-01-01"])  # hide Christmas and New Year's
+    ]
+) """
 st.plotly_chart(fig)
 
 max_closing_price = df["c"].max()
