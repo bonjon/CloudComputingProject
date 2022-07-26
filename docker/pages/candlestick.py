@@ -66,4 +66,10 @@ fig.update_xaxes(
         )
     ),
 )
+# update
+fig.update_layout(template='plotly_dark',
+                  xaxis_rangeselector_font_color='white',
+                  xaxis_rangeselector_activecolor='#626efb',
+                  xaxis_rangeselector_bgcolor='#262730',
+                 )
 st.plotly_chart(fig)
