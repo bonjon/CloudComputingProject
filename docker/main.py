@@ -8,6 +8,8 @@ def install(package):
 
 
 install("streamlit")
+install("plotly")
+install("streamlit-aggrid")
 
 import streamlit as st
 import pandas as pd
