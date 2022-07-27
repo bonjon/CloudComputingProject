@@ -1,22 +1,11 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
-import yaml
-import boto3
+from utils import *
+from configuration import *
 
-bucket_name = "cloudcasa"
-s3 = boto3.resource("s3")
-bucket = s3.Bucket(bucket_name)
+bucket = get_bucket()
 
 st.title("Data Analytics")
-
-SYMBOLS = {
-    "Apple": "AAPL",
-    "Tesla": "TSLA",
-    "Amazon": "AMZN",
-    "Meta": "META",
-    "Netflix": "NFLX",
-}
 
 option = st.selectbox(
     "Select the Company Stock you want to see:",
@@ -25,11 +14,8 @@ option = st.selectbox(
 
 # st.write("You selected:", option)
 
-for obj in bucket.objects.all():
-    if obj.key == str(SYMBOLS[option]) + ".json":
-        data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
+df = get_df(bucket, option)
 
-df = pd.DataFrame.from_dict(data["bars"])
 fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
 # fig.update_xaxes(type="category")
 fig.update_xaxes(
