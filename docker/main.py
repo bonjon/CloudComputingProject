@@ -1,19 +1,7 @@
-import subprocess
-import sys
-import requests
-
-
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-install("streamlit")
-install("plotly")
-install("streamlit-aggrid")
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import yaml
 import boto3
 
 bucket_name = "cloudcasa"
@@ -30,21 +18,18 @@ SYMBOLS = {
     "Netflix": "NFLX",
 }
 
-for obj in bucket.objects.all():
-    print("Nel bucket ci siamo arrivati")
-    print("obj.key:", obj.key)
-    if obj.key == "META.json":
-        json = obj.get()["Body"].read()
-        print(obj.get()["Body"].read())
-
 option = st.selectbox(
     "Select the Company Stock you want to see:",
     (SYMBOLS.keys()),
 )
 
-st.write("You selected:", option)
+# st.write("You selected:", option)
 
-df = pd.DataFrame.from_dict(json["bars"][SYMBOLS[option]])
+for obj in bucket.objects.all():
+    if obj.key == str(SYMBOLS[option]) + ".json":
+        data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
+
+df = pd.DataFrame.from_dict(data["bars"])
 fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
 # fig.update_xaxes(type="category")
 fig.update_xaxes(
