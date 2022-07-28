@@ -32,7 +32,7 @@ def list_s3(bucket, prefix=None):
     return objects
 
 
-def get_df(bucket, option) -> pd.Dataframe:
+def get_df(bucket, option) -> pd.DataFrame:
     df_list = []
     for obj in list_s3(bucket, prefix=str(SYMBOLS[option])):
         data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
