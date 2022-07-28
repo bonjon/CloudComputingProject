@@ -10,16 +10,16 @@ option = st.selectbox(
     (SYMBOLS.keys()),
 )
 
-sma_1 = st.slider(
-    "Days of calculation for the 1st simple moving average",
+ema_1 = st.slider(
+    "Days of calculation for the 1st exponential moving average",
     min_value=1,
     max_value=200,
     value=12,
     format="%d",
     key="first_moving",
 )
-sma_2 = st.slider(
-    "Days of calculation for the 2nd simple moving average",
+ema_2 = st.slider(
+    "Days of calculation for the 2nd exponential moving average",
     min_value=1,
     max_value=200,
     value=26,
@@ -30,12 +30,12 @@ sma_2 = st.slider(
 
 df = get_df(option)
 
-df["sma_1"] = df["c"].rolling(window=sma_1).mean()
-df["sma_2"] = df["c"].rolling(window=sma_2).mean()
+df["ema_1"] = df["c"].ewm(span=ema_1).mean()
+df["ema_2"] = df["c"].ewm(span=ema_2).mean()
 
 fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
-fig.add_scatter(x=df["t"], y=df["sma_1"], mode="lines")
-fig.add_scatter(x=df["t"], y=df["sma_2"], mode="lines")
+fig.add_scatter(x=df["t"], y=df["ema_1"], mode="lines")
+fig.add_scatter(x=df["t"], y=df["ema_2"], mode="lines")
 
 # fig.update_xaxes(type="category")
 fig.update_xaxes(

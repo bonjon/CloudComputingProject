@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from utils import *
 from configuration import *
 
@@ -17,21 +18,41 @@ option_candlestick = st.selectbox(
     ["Candlestick", "OHLC"],
 )
 
+ema_1 = st.slider(
+    "Days of calculation for the 1st exponential moving average",
+    min_value=1,
+    max_value=200,
+    value=12,
+    format="%d",
+    key="first_moving",
+)
+ema_2 = st.slider(
+    "Days of calculation for the 2nd exponential moving average",
+    min_value=1,
+    max_value=200,
+    value=26,
+    format="%d",
+    key="second_moving",
+)
+
 df = get_df(bucket, option)
+
+df["ema_1"] = df["c"].ewm(span=ema_1).mean()
+df["ema_2"] = df["c"].ewm(span=ema_2).mean()
+df["macd"] = df["ema_1"] - df["ema_2"]
 
 # st.write("You selected:", option)
 
-fig = go.Figure(
-    data=[
-        go.Candlestick(
-            x=df["t"], open=df["o"], high=df["h"], low=df["l"], close=df["c"]
-        )
-    ]
+fig = make_subplots(
+    vertical_spacing=0, rows=3, cols=1, row_heights=[0.7, 0.15, 0.15], shared_xaxes=True
+)
+fig.add_trace(
+    go.Candlestick(x=df["t"], open=df["o"], high=df["h"], low=df["l"], close=df["c"])
     if option_candlestick == "Candlestick"
     else go.Ohlc(x=df["t"], open=df["o"], high=df["h"], low=df["l"], close=df["c"])
 )
 fig.update_xaxes(
-    rangeslider_visible=True,
+    rangeslider_visible=False,
     rangeselector=dict(
         buttons=list(
             [
@@ -43,6 +64,30 @@ fig.update_xaxes(
             ]
         )
     ),
+    showline=True,
+    linewidth=1,
+    linecolor="black",
+    mirror=False,
+    row=1,
+    col=1,
+)
+fig.update_xaxes(
+    rangeslider_visible=False,
+    showline=True,
+    linewidth=1,
+    linecolor="black",
+    mirror=False,
+    row=2,
+    col=1,
+)
+fig.update_xaxes(
+    rangeslider_visible=True,
+    showline=True,
+    linewidth=1,
+    linecolor="black",
+    mirror=False,
+    row=3,
+    col=1,
 )
 # update
 fig.update_layout(
