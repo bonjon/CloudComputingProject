@@ -30,15 +30,48 @@ ema_2 = st.slider(
 
 df = get_df(option)
 
-df["ema_1"] = df["c"].ewm(span=ema_1).mean()
-df["ema_2"] = df["c"].ewm(span=ema_2).mean()
+df["ema_1"] = df["c"].ewm(span=ema_1, adjust=False).mean()
+df["ema_2"] = df["c"].ewm(span=ema_2, adjust=False).mean()
+df["tp"] = (df["h"] + df["l"] + df["c"]) / 3
+df["tp_sma"] = df["tp"].rolling(20).mean()
+df["tp_std"] = df["tp"].rolling(20).std(ddof=0)
 
 fig = px.line(df, x="t", y="c", title=str(option) + " Stock")
-fig.add_scatter(x=df["t"], y=df["ema_1"], mode="lines")
-fig.add_scatter(x=df["t"], y=df["ema_2"], mode="lines")
+fig.add_scatter(
+    x=df["t"],
+    y=df["ema_1"],
+    mode="lines",
+    opacity=0.8,
+    name="EMA 1",
+)
+fig.add_scatter(
+    x=df["t"],
+    y=df["ema_2"],
+    mode="lines",
+    opacity=0.8,
+    name="EMA 2",
+)
+# Upper Bound
+fig.add_scatter(
+    x=df["t"],
+    y=df["tp_sma"] + (df["tp_std"] * 2.0),
+    line_color="gray",
+    name="Upper band",
+    opacity=0.2,
+)
+# Lower Bound
+fig.add_scatter(
+    x=df["t"],
+    y=df["tp_sma"] - (df["tp_std"] * 2),
+    line_color="gray",
+    fill="tonexty",
+    name="Lower band",
+    opacity=0.2,
+)
 
 # fig.update_xaxes(type="category")
 fig.update_xaxes(
+    title_text="",
     rangeslider_visible=True,
     rangeselector=dict(
         buttons=list(
@@ -66,6 +99,7 @@ fig.update_layout(
 #        dict(values=["2015-12-25", "2016-01-01"])  # hide Christmas and New #Year's
 #    ]
 # )
+fig.update_yaxes(title_text="Price")
 st.plotly_chart(fig)
 
 max_closing_price = df["c"].max()
