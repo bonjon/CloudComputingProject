@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "antoandgar1/test:latest",
+    "Name": "giovpic98/cloudcomputingproject:tag",
     "Update": "true"
   },
   "Ports": [

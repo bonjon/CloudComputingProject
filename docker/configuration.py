@@ -6,4 +6,4 @@ SYMBOLS = {
     "Netflix": "NFLX",
 }
 
-BUCKET_NAME = "cloudcasa"
+BUCKET_NAME = "cloudpalle"
