@@ -43,7 +43,7 @@ df["ema_2"] = df["c"].ewm(span=ema_2, adjust=False).mean()
 df["macd"] = df["ema_1"] - df["ema_2"]
 df["macd_signal"] = df["macd"].ewm(span=9, adjust=False).mean()
 df["macd_area"] = df["macd"] - df["macd_signal"]
-df["tp"] = (df["h"] + df["l"] + df["c"]) / 3
+df["tp"] = (df["h"] + df["l"] + df["c"]) / 3.0
 df["tp_sma"] = df["tp"].rolling(20).mean()
 df["tp_std"] = df["tp"].rolling(20).std(ddof=0)
 

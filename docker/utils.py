@@ -2,11 +2,17 @@ import pandas as pd
 import yaml
 import boto3
 from configuration import *
+import logging
+from botocore.exceptions import ClientError
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def get_bucket():
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(BUCKET_NAME)
+    logger.info("Bucket '%s' created successfully", bucket.name)
     return bucket
 
 
@@ -18,24 +24,28 @@ def list_s3(bucket, prefix=None):
     :param prefix: When specified, only objects that start with this prefix are listed.
     :return: The list of objects.
     """
-    # try:
-    if not prefix:
-        objects = list(bucket.objects.all())
+    try:
+        if not prefix:
+            objects = list(bucket.objects.all())
+            logger.info("Returning all objects inside the bucket")
+        else:
+            objects = list(bucket.objects.filter(Prefix=prefix))
+            logger.info("Returning objects with prefix: %s", prefix)
+            logger.info(
+                "Got objects %s from bucket '%s'", [o.key for o in objects], bucket.name
+            )
+    except ClientError:
+        logger.exception("Couldn't get objects for bucket '%s'", bucket.name)
+        raise
     else:
-        objects = list(bucket.objects.filter(Prefix=prefix))
-        # logger.info("Got objects %s from bucket '%s'",
-        # [o.key for o in objects], bucket.name)
-    # except ClientError:
-    # logger.exception("Couldn't get objects for bucket '%s'.", bucket.name)
-    # raise
-    # else:
-    return objects
+        return objects
 
 
 def get_df(bucket, option) -> pd.DataFrame:
     df_list = []
+    logger.info("Getting data from S3 bucket")
     for obj in list_s3(bucket, prefix=str(SYMBOLS[option])):
         data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
         df_list.append(pd.DataFrame.from_dict(data["bars"]))
-
+    logger.info("Got %d dataframe from S3 bucket", len(df_list))
     return pd.concat(df_list)
