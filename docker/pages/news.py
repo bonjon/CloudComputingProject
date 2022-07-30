@@ -22,7 +22,12 @@ st.plotly_chart(fig)
 st.subheader('Most Cited Symbols')
 join_df = np.array([i for i in df['symbols']])
 join_df = np.concatenate(join_df).ravel()
-fig = px.bar(join_df)
+array = []
+symbols = ['AAPL','META','NFLX','AMZN','TSLA']
+for symbol in join_df:
+    if symbol in symbols:
+        array.append(symbol)
+fig = px.bar(array)
 fig.update_layout(showlegend=False)
 st.plotly_chart(fig)
 
