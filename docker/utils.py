@@ -9,7 +9,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def get_bucket():
+def get_bucket(news=False):
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(BUCKET_NAME)
     logger.info("Bucket '%s' created successfully", bucket.name)
@@ -44,8 +44,13 @@ def list_s3(bucket, prefix=None):
 def get_df(bucket, option) -> pd.DataFrame:
     df_list = []
     logger.info("Getting data from S3 bucket")
-    for obj in list_s3(bucket, prefix=str(SYMBOLS[option])):
-        data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
-        df_list.append(pd.DataFrame.from_dict(data["bars"]))
+    if option == "news":
+        for obj in list_s3(bucket, prefix=option):
+            data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
+            df_list.append(pd.DataFrame.from_dict(data["news"]))
+    else:
+        for obj in list_s3(bucket, prefix=str(SYMBOLS[option])):
+            data = yaml.load(obj.get()["Body"].read(), Loader=yaml.FullLoader)
+            df_list.append(pd.DataFrame.from_dict(data["bars"]))
     logger.info("Got %d dataframe from S3 bucket", len(df_list))
     return pd.concat(df_list)
