@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
+from pandas.plotting import scatter_matrix
 
 API_KEY = "PKG95PV0R6DI0C2G522P"
 API_SECRET = "knWqSpYCGrkQopBig8K4dIWYNASADqzcjgalRx8O"
@@ -61,3 +61,7 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+data = pd.pivot_table(df, values="c", index=["t"], columns=["s"]).reset_index()
+
+st.plotly_chart(px.scatter_matrix(data.drop(columns=["t"])))
