@@ -45,10 +45,15 @@ df["macd_area"] = df["macd"] - df["macd_signal"]
 df["tp"] = (df["h"] + df["l"] + df["c"]) / 3
 df["tp_sma"] = df["tp"].rolling(20).mean()
 df["tp_std"] = df["tp"].rolling(20).std(ddof=0)
+df["RSI"] = RSI(df["c"])  # .fillna(0)
 
 # st.write("You selected:", option)
 fig = make_subplots(
-    vertical_spacing=0, rows=3, cols=1, row_heights=[0.7, 0.15, 0.15], shared_xaxes=True
+    vertical_spacing=0,
+    rows=4,
+    cols=1,
+    row_heights=[0.8, 0.2, 0.2, 0.15],
+    shared_xaxes=True,
 )
 fig.add_trace(
     go.Candlestick(
@@ -156,6 +161,30 @@ fig.add_trace(
     row=2,
     col=1,
 )
+
+fig.add_trace(
+    go.Scatter(x=df["t"], y=df["RSI"], name="RSI"),
+    row=3,
+    col=1,
+)
+# Add overbought/oversold
+fig.add_hline(
+    y=30,
+    row=3,
+    col=1,
+    line_color="#336699",
+    line_width=2,
+    line_dash="dash",
+)
+fig.add_hline(
+    y=70,
+    row=3,
+    col=1,
+    line_color="#336699",
+    line_width=2,
+    line_dash="dash",
+)
+
 fig.add_trace(
     go.Bar(
         x=df["t"],
@@ -163,7 +192,7 @@ fig.add_trace(
         marker_color="yellow",
         name="Volume",
     ),
-    row=3,
+    row=4,
     col=1,
 )
 
@@ -173,6 +202,7 @@ fig.update_xaxes(
         buttons=list(
             [
                 dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
                 dict(count=6, label="6m", step="month", stepmode="backward"),
                 dict(count=1, label="YTD", step="year", stepmode="todate"),
                 dict(count=1, label="1y", step="year", stepmode="backward"),
@@ -197,7 +227,7 @@ fig.update_xaxes(
     col=1,
 )
 fig.update_xaxes(
-    rangeslider_visible=True,
+    rangeslider_visible=False,
     showline=True,
     linewidth=1,
     linecolor="black",
@@ -205,14 +235,34 @@ fig.update_xaxes(
     row=3,
     col=1,
 )
+fig.update_xaxes(
+    rangeslider_visible=True,
+    showline=True,
+    linewidth=1,
+    linecolor="black",
+    mirror=False,
+    row=4,
+    col=1,
+)
+# to hide the weeends and holidays
+fig.update_xaxes(
+    rangebreaks=[
+        dict(bounds=["sat", "mon"]),  # hide weekends
+        dict(values=["2022-12-25", "2022-01-01"]),  # hide Christmas and New Year's
+    ]
+)
+
 fig.update_yaxes(title_text="Price", row=1, col=1)
 fig.update_yaxes(title_text="MACD", showgrid=False, row=2, col=1)
-fig.update_yaxes(title_text="Volume", row=3, col=1)
+fig.update_yaxes(title_text="RSI", row=3, col=1)
+fig.update_yaxes(title_text="Volume", row=4, col=1)
 # update
 fig.update_layout(
     template="plotly_dark",
     xaxis_rangeselector_font_color="white",
     xaxis_rangeselector_activecolor="#626efb",
     xaxis_rangeselector_bgcolor="#262730",
+    showlegend=False,
 )
+
 st.plotly_chart(fig)

@@ -77,6 +77,7 @@ fig.update_xaxes(
         buttons=list(
             [
                 dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
                 dict(count=6, label="6m", step="month", stepmode="backward"),
                 dict(count=1, label="YTD", step="year", stepmode="todate"),
                 dict(count=1, label="1y", step="year", stepmode="backward"),
@@ -91,14 +92,15 @@ fig.update_layout(
     xaxis_rangeselector_font_color="white",
     xaxis_rangeselector_activecolor="#626efb",
     xaxis_rangeselector_bgcolor="#262730",
+    showlegend=False,
 )
 # to hide the weeends and holidays
-# fig.update_xaxes(
-#    rangebreaks=[
-#        dict(bounds=["sat", "mon"]), #hide weekends
-#        dict(values=["2015-12-25", "2016-01-01"])  # hide Christmas and New #Year's
-#    ]
-# )
+fig.update_xaxes(
+    rangebreaks=[
+        dict(bounds=["sat", "mon"]),  # hide weekends
+        dict(values=["2015-12-25", "2016-01-01"]),  # hide Christmas and New Year's
+    ]
+)
 fig.update_yaxes(title_text="Price")
 st.plotly_chart(fig)
 
