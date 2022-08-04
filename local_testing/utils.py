@@ -21,8 +21,10 @@ def get_df(
         with open(path + "/" + obj, "r") as f:
             data = yaml.load(f.read(), Loader=yaml.FullLoader)
             df_list.append(pd.DataFrame.from_dict(data["bars"]))
-
-    return pd.concat(df_list)
+    if len(df_list) >= 1:
+        return pd.concat(df_list)
+    else:
+        return None
 
 
 def RSI(close, n=14):
