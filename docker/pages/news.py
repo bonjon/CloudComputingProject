@@ -13,6 +13,20 @@ st.title("Data Analytics")
 bucket = get_bucket()
 df = get_df(bucket, "news")
 
+# Most Frequent Words Plot
+st.subheader('Most Frequent Words')
+text = " ".join(i for i in df['summary'])
+STOPWORDS = ["S"] + list(STOPWORDS)
+stopwords = set(STOPWORDS)
+wordcloud = WordCloud(stopwords=stopwords, background_color="black").generate(text)
+print(text)
+plt.figure(figsize=(15,10))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+st.set_option('deprecation.showPyplotGlobalUse', False)
+st.pyplot()
+
 # Authors Plot
 fig = px.bar(df, x='author')
 st.subheader('Authors Plot')
@@ -30,17 +44,3 @@ for symbol in join_df:
 fig = px.bar(array)
 fig.update_layout(showlegend=False)
 st.plotly_chart(fig)
-
-# Most Frequent Words Plot
-st.subheader('Most Frequent Words')
-text = " ".join(i for i in df['summary'])
-STOPWORDS = ["S"] + list(STOPWORDS)
-stopwords = set(STOPWORDS)
-wordcloud = WordCloud(stopwords=stopwords, background_color="black").generate(text)
-print(text)
-plt.figure(figsize=(15,10))
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis("off")
-plt.show()
-st.set_option('deprecation.showPyplotGlobalUse', False)
-st.pyplot()

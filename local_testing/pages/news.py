@@ -35,19 +35,6 @@ response = requests.get(
 # Create the DataFrame for the News API
 df = pd.DataFrame.from_dict(response.json()["news"])
 
-# Authors Plot
-fig = px.bar(df, x="author")
-st.subheader("Authors Plot")
-st.plotly_chart(fig)
-
-# Most Cited Symbols/Companies Plot
-st.subheader("Most Cited Symbols")
-join_df = np.array([i for i in df["symbols"]])
-join_df = np.concatenate(join_df).ravel()
-fig = px.bar(join_df)
-fig.update_layout(showlegend=False)
-st.plotly_chart(fig)
-
 # Most Frequent Words Plot
 st.subheader("Most Frequent Words")
 text = " ".join(i for i in df["summary"])
@@ -61,3 +48,23 @@ plt.axis("off")
 # plt.show()
 st.set_option("deprecation.showPyplotGlobalUse", False)
 st.pyplot()
+
+# Authors Plot
+fig = px.bar(df, x="author")
+st.subheader("Authors Plot")
+st.plotly_chart(fig)
+
+# Most Cited Symbols/Companies Plot
+st.subheader('Most Cited Symbols')
+join_df = np.array([i for i in df['symbols']])
+join_df = np.concatenate(join_df).ravel()
+array = []
+symbols = ['AAPL','META','NFLX','AMZN','TSLA']
+for symbol in join_df:
+    if symbol in symbols:
+        array.append(symbol)
+fig = px.bar(array)
+fig.update_layout(showlegend=False)
+st.plotly_chart(fig)
+
+
