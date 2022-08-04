@@ -1,41 +1,19 @@
-import requests
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from configuration import *
+from utils import get_df
 
-
-API_KEY = "PKG95PV0R6DI0C2G522P"
-API_SECRET = "knWqSpYCGrkQopBig8K4dIWYNASADqzcjgalRx8O"
-BASE_URL = "https://data.alpaca.markets/"
-parameters = {
-    "start": "2021-10-01T0:00:00Z",
-    "timeframe": "1Day",
-    "symbols": "AAPL,TSLA,AMZN,META,NFLX",
-    "adjustment": "raw",
-}
-headers = {"Apca-Api-Key-Id": API_KEY, "Apca-Api-Secret-Key": API_SECRET}
-response = requests.get(
-    url=BASE_URL + "v2/stocks/bars?", headers=headers, params=parameters
-)
 st.title("Data Analytics")
 
-SYMBOLS = {
-    "Apple": "AAPL",
-    "Tesla": "TSLA",
-    "Amazon": "AMZN",
-    "Meta": "META",
-    "Netflix": "NFLX",
-}
+dataframes = []
+for sim in SYMBOLS.keys():
+    df = get_df(sim)
+    if df is not None:
+        df["s"] = SYMBOLS[sim]
+        dataframes.append(df)
 
-
-def get_data():
-    for sym, items in sorted(response.json()["bars"].items()):
-        for item in items:
-            item.update({"s": sym})
-            yield item
-
-
-df = pd.DataFrame.from_dict([elem for elem in get_data()])
+df = pd.concat(dataframes)
 
 fig = px.line(df, x="t", y="c", color="s", title="Comparing Stock")
 fig.update_xaxes(
@@ -61,3 +39,7 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+data = pd.pivot_table(df, values="c", index=["t"], columns=["s"]).reset_index()
+
+st.plotly_chart(px.scatter_matrix(data.drop(columns=["t"])))
