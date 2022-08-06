@@ -1,21 +1,18 @@
 import pandas as pd
 import re
-import requests
+import streamlit as st
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from textblob import TextBlob
+from utils import *
 
-endpoint = 'https://api.twitter.com/2/tweets/search/recent'
-headers = {'Authorization' : 'Bearer AAAAAAAAAAAAAAAAAAAAAGaVfQEAAAAAw0NVD2QK7d%2Boe%2B1EyKFZpWs%2F0rA%3DlzUkkQ4W5Eirk1c9k97CyybihOe83XrUaqnPgkRd8T8M3YorMc'}
-parameters = {'query' : 'microsoft', 'max_results' : '100', 'tweet.fields' : 'lang'}
+st.title("Sentiment Analysis")
 
-response = requests.get(endpoint, headers = headers, params = parameters)
-tweets = response.json()['data']
-next_token = response.json()['meta']['next_token']
-parameters['next_token'] = next_token
+# Read from the bucket
+bucket = get_bucket()
+df = get_df(bucket, "news")
 
-response_page2 = requests.get(endpoint, headers = headers, params = parameters)
-tweets += response_page2.json()['data']
+#------------TO-DO------------------
 
 for tweet in tweets[:]:
     if tweet['lang'] != 'en':
