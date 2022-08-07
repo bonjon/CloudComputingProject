@@ -4,13 +4,15 @@ import logging
 import os
 import requests
 
+from datetime import date, timedelta
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     endpoint = 'https://api.twitter.com/2/tweets/search/recent'
-    headers = {'Authorization' : 'Bearer ' + os.environ['Bearer']}
-    parameters = {'query' : 'microsoft', 'max_results' : '100', 'tweet.fields' : 'lang'}
+    headers = {'Authorization' : 'Bearer ' + os.environ['BEARER']}
+    parameters = {'query' : event['query'], 'max_results' : '100', 'tweet.fields' : 'lang'}
 
     response = requests.get(endpoint, headers = headers, params = parameters)
     tweets = response.json()['data']
@@ -21,8 +23,12 @@ def lambda_handler(event, context):
     tweets += response_page2.json()['data']
 
     s3 = boto3.client('s3')
-    s3_response = s3.put_object(Body = json.dumps(tweets), Bucket = 'casacloudbucket', Key = 'microsoft.json')
+    s3_response = s3.put_object(Body = json.dumps(tweets), Bucket = 'casacloudbucket', Key = event['query'] + '.json')
 
     if s3_response['ResponseMetadata']['HTTPStatusCode'] != 200:
         logger.error('error' + s3_response['ResponseMetadata']['HTTPStatusCode'] + 
                     'while uploading json to s3')
+    
+    return {
+        "statusCode": 200,
+    }

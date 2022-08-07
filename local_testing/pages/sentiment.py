@@ -4,11 +4,12 @@ import re
 import json
 import streamlit as st
 import plotly.express as px
+import numpy as np
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from textblob import TextBlob
 
-#st.title("Sentiment Analysis")
+st.title("Sentiment Analysis")
 
 #------------TO-DO------------------
 
@@ -74,5 +75,6 @@ for index, row in tweet_df['text'].iteritems():
     tweet_df.loc[index, 'positive'] = positive
     tweet_df.loc[index, 'compound'] = compound
 
-fig = px.pie(tweet_df, values = 'sentiment', names = 'sentiment')
-fig.show()
+print(tweet_df)
+fig = px.pie(tweet_df, names = 'sentiment', values = np.ones(tweet_df.shape[0]))
+st.plotly_chart(fig)
