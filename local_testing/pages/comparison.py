@@ -41,6 +41,13 @@ fig.update_layout(
 
 st.plotly_chart(fig)
 
-data = pd.pivot_table(df, values="c", index=["t"], columns=["s"]).reset_index()
+df["intraday_variation"] = df["c"] - df["o"]
+data = pd.pivot_table(
+    df, values="intraday_variation", index=["t"], columns=["s"]
+).reset_index()
 
-st.plotly_chart(px.scatter_matrix(data.drop(columns=["t"])))
+st.plotly_chart(
+    px.scatter_matrix(
+        data.drop(columns=["t"]),
+    )
+)

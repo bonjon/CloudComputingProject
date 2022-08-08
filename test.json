@@ -3,6 +3,6 @@
     "sub_url": "v2/stocks/",
     "symbol": "AAPL",
     "query_url": "/bars?",
-    "start": "2022-01-01T0:00:00Z",
+    "start": "2022-01-01",
     "timeframe": "1Day"
 }

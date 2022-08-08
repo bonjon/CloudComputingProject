@@ -3,7 +3,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from utils import *
 from configuration import *
-import numpy as np
 
 st.title("Data Analytics")
 
