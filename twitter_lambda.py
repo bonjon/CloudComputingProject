@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     tweets += response_page2.json()['data']
 
     s3 = boto3.client('s3')
-    s3_response = s3.put_object(Body = json.dumps(tweets), Bucket = 'casacloudbucket', Key = event['query'] + '.json')
+    s3_response = s3.put_object(Body = json.dumps(tweets), Bucket = os.environ['BUCKET_NAME'], Key = "tweet_" + event['query'] + '.json')
 
     if s3_response['ResponseMetadata']['HTTPStatusCode'] != 200:
         logger.error('error' + s3_response['ResponseMetadata']['HTTPStatusCode'] + 
@@ -31,4 +31,5 @@ def lambda_handler(event, context):
     
     return {
         "statusCode": 200,
+        "body": "Ok for query " + event['query'],
     }
