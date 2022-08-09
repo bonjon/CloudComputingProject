@@ -267,3 +267,35 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+st.title("Stochastic Oscillator")
+
+
+def stochastic(df, k, d):
+    df = df.copy()
+    low_min = df["l"].rolling(window=k).min()
+    high_max = df["h"].rolling(window=k).max()
+    df["stoch_k"] = 100 * (df["c"] - low_min) / (high_max - low_min)
+    df["stoch_d"] = df["stoch_k"].rolling(window=d).mean()
+    return df
+
+
+stochs = stochastic(df, k=14, d=3)
+
+fig1 = go.Figure()
+fig1.add_trace(go.Scatter(x=df["t"], y=stochs.stoch_k, name="K stochastic"))
+fig1.add_trace(go.Scatter(x=df["t"], y=stochs.stoch_d, name="D stochastic"))
+fig1.add_hline(
+    y=20,
+    line_color="#336699",
+    line_width=2,
+    line_dash="dash",
+)
+fig1.add_hline(
+    y=80,
+    line_color="#336699",
+    line_width=2,
+    line_dash="dash",
+)
+
+st.plotly_chart(fig1)

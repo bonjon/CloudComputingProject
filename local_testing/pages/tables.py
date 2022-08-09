@@ -2,7 +2,7 @@ import streamlit as st
 from utils import *
 from configuration import *
 
-st.title("Data Analytics")
+st.title("Raw Data Analytics")
 
 option = st.selectbox(
     "Select the Company Stock you want to see:",

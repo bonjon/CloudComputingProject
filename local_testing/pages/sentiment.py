@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 import re
-import json
 import streamlit as st
 import plotly.express as px
 import numpy as np

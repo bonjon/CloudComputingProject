@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 from utils import *
 from configuration import *
 
-st.title("Data Analytics")
+st.title("Candlestick Analytics")
 
 option = st.selectbox(
     "Select the Company Stock you want to see:",
@@ -265,6 +265,8 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+st.title("Stochastic Oscillator")
 
 
 def stochastic(df, k, d):

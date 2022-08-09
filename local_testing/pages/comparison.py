@@ -5,10 +5,13 @@ from pandas.plotting import scatter_matrix
 from configuration import *
 from utils import get_df
 
-st.title("Data Analytics")
+st.title("Stocks Comparison")
+options = st.multiselect(
+    "Select the stocks to compare", list(SYMBOLS.keys()), default=["Apple"]
+)
 
 dataframes = []
-for sim in SYMBOLS.keys():
+for sim in options:
     df = get_df(sim)
     if df is not None:
         df["s"] = SYMBOLS[sim]
@@ -16,7 +19,7 @@ for sim in SYMBOLS.keys():
 
 df = pd.concat(dataframes)
 
-fig = px.line(df, x="t", y="c", color="s", title="Comparing Stock")
+fig = px.line(df, x="t", y="c", color="s")
 fig.update_xaxes(
     rangeslider_visible=True,
     rangeselector=dict(
@@ -45,6 +48,8 @@ df["intraday_variation"] = df["c"] - df["o"]
 data = pd.pivot_table(
     df, values="intraday_variation", index=["t"], columns=["s"]
 ).reset_index()
+
+st.title("Correlation of Intraday Variation")
 
 st.plotly_chart(
     px.scatter_matrix(

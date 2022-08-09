@@ -5,7 +5,7 @@ from st_aggrid.shared import GridUpdateMode
 from utils import *
 from configuration import *
 
-st.title("Data Analytics")
+st.title("Tabular Data Analytics")
 
 option = st.selectbox(
     "Select the Company Stock you want to see:",
