@@ -21,6 +21,10 @@ option = st.selectbox(
 )
 
 s3 = boto3.client("s3")
+if option == "Apple":
+    option = option + " Inc"
+elif option == "Meta":
+    option = "Facebook"
 response = s3.get_object(Bucket=BUCKET_NAME, Key="tweet_" + option + ".json")
 
 tweets = json.loads(response['Body'].read())
@@ -39,8 +43,8 @@ remove_hashtag = lambda x: re.sub("#\w+", " ", x)
 remove_punctuation = lambda x: re.sub("[^\w\s]", " ", x)
 remove_multiple_whitespaces = lambda x: re.sub(" +", " ", x)
 
-tweet_df["clean_text"] = (
-    tweet_df["clean_text"]
+tweet_df["text"] = (
+    tweet_df["text"]
     .map(remove_backslah)
     .map(remove_retweet)
     .map(remove_tag)
@@ -50,11 +54,11 @@ tweet_df["clean_text"] = (
     .map(remove_multiple_whitespaces)
 )
 
-tweet_df[["polarity", "subjectivity"]] = tweet_df["clean_text"].apply(
+tweet_df[["polarity", "subjectivity"]] = tweet_df["text"].apply(
     lambda Text: pd.Series(TextBlob(Text).sentiment)
 )
 
-for index, row in tweet_df["clean_text"].iteritems():
+for index, row in tweet_df["text"].iteritems():
     score = SentimentIntensityAnalyzer().polarity_scores(row)
     negative = score["neg"]
     neutral = score["neu"]
