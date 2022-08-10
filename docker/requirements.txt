@@ -6,3 +6,5 @@ streamlit==1.11.0
 streamlit-aggrid==0.2.3.post2
 pyyaml
 wordcloud
+nltk
+textblob

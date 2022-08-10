@@ -4,8 +4,6 @@ import logging
 import os
 import requests
 
-from datetime import date, timedelta
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
