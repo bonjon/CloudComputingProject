@@ -109,11 +109,11 @@ st.plotly_chart(fig)
 max_closing_price = df["c"].max()
 st.metric(f"Highest Close price for {option}: ", round(max_closing_price, 4))
 
-max_date = df[df["c"] == max_closing_price]["t"].values[0]
+max_date = df[df["c"] == max_closing_price]["t"].values[0].split("T")[0]
 st.metric(f"Highest Close Price for {option} was observed on: ", max_date)
 
 min_closing_price = df["c"].min()
 st.metric(f"Lowest Close price for {option}: ", round(min_closing_price, 4))
 
-min_date = df[df["c"] == min_closing_price]["t"].values[0]
+min_date = df[df["c"] == min_closing_price]["t"].values[0].split("T")[0]
 st.metric(f"Lowest Close Price for {option} was observed on: ", min_date)

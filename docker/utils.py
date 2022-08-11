@@ -9,7 +9,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def get_bucket(news=False):
+def get_bucket():
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(BUCKET_NAME)
     logger.info("Bucket '%s' created successfully", bucket.name)
@@ -41,7 +41,7 @@ def list_s3(bucket, prefix=None):
         return objects
 
 
-def get_df(bucket, option) -> pd.DataFrame:
+def get_df(bucket, option=None) -> pd.DataFrame:
     df_list = []
     logger.info("Getting data from S3 bucket")
     if option == "news":

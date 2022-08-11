@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder
-from st_aggrid.shared import GridUpdateMode
 from utils import *
 from configuration import *
 

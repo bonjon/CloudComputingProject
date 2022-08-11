@@ -1,13 +1,17 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from pandas.plotting import scatter_matrix
 from configuration import *
 from utils import get_df
 
-st.title("Data Analytics")
+st.title("Stocks Comparison")
+options = st.multiselect(
+    "Select the stocks to compare", list(SYMBOLS.keys()), default=["Apple"]
+)
 
 dataframes = []
-for sim in SYMBOLS.keys():
+for sim in options:
     df = get_df(sim)
     if df is not None:
         df["s"] = SYMBOLS[sim]
@@ -40,6 +44,15 @@ fig.update_layout(
 
 st.plotly_chart(fig)
 
-data = pd.pivot_table(df, values="c", index=["t"], columns=["s"]).reset_index()
+df["intraday_variation"] = df["c"] - df["o"]
+data = pd.pivot_table(
+    df, values="intraday_variation", index=["t"], columns=["s"]
+).reset_index()
 
-st.plotly_chart(px.scatter_matrix(data.drop(columns=["t"])))
+st.title("Correlation of Intraday Variation")
+
+st.plotly_chart(
+    px.scatter_matrix(
+        data.drop(columns=["t"]),
+    )
+)

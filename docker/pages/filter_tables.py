@@ -1,13 +1,12 @@
 import pandas as pd
 import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder
-from st_aggrid.shared import GridUpdateMode
 from utils import *
 from configuration import *
 
 bucket = get_bucket()
 
-st.title("Data Analytics")
+st.title("Tabular Data Analytics")
 
 option = st.selectbox(
     "Select the Company Stock you want to see:",
