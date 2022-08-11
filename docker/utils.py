@@ -41,7 +41,7 @@ def list_s3(bucket, prefix=None):
         return objects
 
 
-def get_df(bucket, option=None) -> pd.DataFrame:
+def get_df(bucket, option) -> pd.DataFrame:
     df_list = []
     logger.info("Getting data from S3 bucket")
     if option == "news":

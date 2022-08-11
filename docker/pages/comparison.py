@@ -3,16 +3,18 @@ import pandas as pd
 import plotly.express as px
 from pandas.plotting import scatter_matrix
 from configuration import *
-from utils import get_df
+from utils import get_df, get_bucket
 
 st.title("Stocks Comparison")
 options = st.multiselect(
     "Select the stocks to compare", list(SYMBOLS.keys()), default=["Apple"]
 )
 
+bucket = get_bucket()
+
 dataframes = []
 for sim in options:
-    df = get_df(sim)
+    df = get_df(bucket, sim)
     if df is not None:
         df["s"] = SYMBOLS[sim]
         dataframes.append(df)
