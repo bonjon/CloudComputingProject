@@ -1,40 +1,32 @@
-import nltk
+import json
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import re
-import requests
 import streamlit as st
 
 from configuration import *
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from textblob import TextBlob
 
+st.title("Tweet Count")
+
+file = open("count_tweet_example.json", "r")
+count = json.loads(file.read())
+
+count_list = [[c["tweet_count"], c["end"]] for c in count]
+count_df = pd.DataFrame(count_list, columns=["count", "datetime"])
+
+fig = px.line(count_df, x="datetime", y="count")
+st.plotly_chart(fig)
+
 st.title("Sentiment Analysis")
 
-nltk.download("vader_lexicon")
-
-endpoint = "https://api.twitter.com/2/tweets/search/recent"
-headers = {
-    "Authorization": "Bearer AAAAAAAAAAAAAAAAAAAAAGaVfQEAAAAAw0NVD2QK7d%2Boe%2B1EyKFZpWs%2F0rA%3DlzUkkQ4W5Eirk1c9k97CyybihOe83XrUaqnPgkRd8T8M3YorMc"
-}
-parameters = {"query": "tesla", "max_results": "100", "tweet.fields": "lang"}
-
-response = requests.get(endpoint, headers = headers, params = parameters)
-tweets = response.json()["data"]
-next_token = response.json()["meta"]["next_token"]
-parameters["next_token"] = next_token
-
-response_page2 = requests.get(endpoint, headers = headers, params = parameters)
-tweets += response_page2.json()["data"]
-
-#s3 = boto3.client("s3")
-#s3_response = s3.put_object(Body = json.dumps(tweets), Bucket = "casacloudbucket", Key = "tweet_" + "tesla" + '.json')
+file = open("search_tweet_example.json", "r")
+tweets = json.loads(file.read())
 
 tweet_list = [tweet["text"] for tweet in tweets if tweet["lang"] == "en"]
-
 tweet_df = pd.DataFrame(tweet_list, columns=["text"])
-
 tweet_df.drop_duplicates(inplace=True)
 
 remove_backslah = lambda x: re.sub("(\n)+", " ", x)
@@ -67,12 +59,9 @@ for index, row in tweet_df["text"].iteritems():
     positive = score["pos"]
     compound = score["compound"]
 
-    if negative > positive:
-        tweet_df.loc[index, "sentiment"] = "negative"
-    elif negative < positive:
-        tweet_df.loc[index, "sentiment"] = "positive"
-    else:
-        tweet_df.loc[index, "sentiment"] = "neutral"
+    if negative > positive: tweet_df.loc[index, "sentiment"] = "negative"
+    elif negative < positive: tweet_df.loc[index, "sentiment"] = "positive"
+    else: tweet_df.loc[index, "sentiment"] = "neutral"
 
     tweet_df.loc[index, "negative"] = negative
     tweet_df.loc[index, "neutral"] = neutral

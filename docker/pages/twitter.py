@@ -11,7 +11,7 @@ from configuration import *
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from textblob import TextBlob
 
-st.title("Sentiment Analysis")
+st.title("Tweet Count")
 
 nltk.download("vader_lexicon")
 
@@ -20,19 +20,26 @@ option = st.selectbox(
     (SYMBOLS.keys()),
 )
 
-s3 = boto3.client("s3")
-if option == "Apple":
-    option = option + " Inc"
-elif option == "Meta":
-    option = "Facebook"
-response = s3.get_object(Bucket=BUCKET_NAME, Key="tweet_" + option + ".json")
+if option == "Apple": option += " Inc"
+elif option == "Meta": option = "Facebook"
 
-tweets = json.loads(response['Body'].read())
+s3 = boto3.client("s3")
+response = s3.get_object(Bucket=BUCKET_NAME, Key="count_tweet_" + option + ".json")
+count = json.loads(response["Body"].read())
+
+count_list = [[c["tweet_count"], c["end"]] for c in count]
+count_df = pd.DataFrame(count_list, columns=["count", "datetime"])
+
+fig = px.line(count_df, x="datetime", y="count")
+st.plotly_chart(fig)
+
+st.title("Sentiment Analysis")
+
+response = s3.get_object(Bucket=BUCKET_NAME, Key="search_tweet_" + option + ".json")
+tweets = json.loads(response["Body"].read())
 
 tweet_list = [tweet["text"] for tweet in tweets if tweet["lang"] == "en"]
-
 tweet_df = pd.DataFrame(tweet_list, columns=["text"])
-
 tweet_df.drop_duplicates(inplace=True)
 
 remove_backslah = lambda x: re.sub("(\n)+", " ", x)
@@ -65,12 +72,9 @@ for index, row in tweet_df["text"].iteritems():
     positive = score["pos"]
     compound = score["compound"]
 
-    if negative > positive:
-        tweet_df.loc[index, "sentiment"] = "negative"
-    elif negative < positive:
-        tweet_df.loc[index, "sentiment"] = "positive"
-    else:
-        tweet_df.loc[index, "sentiment"] = "neutral"
+    if negative > positive: tweet_df.loc[index, "sentiment"] = "negative"
+    elif negative < positive: tweet_df.loc[index, "sentiment"] = "positive"
+    else: tweet_df.loc[index, "sentiment"] = "neutral"
 
     tweet_df.loc[index, "negative"] = negative
     tweet_df.loc[index, "neutral"] = neutral
