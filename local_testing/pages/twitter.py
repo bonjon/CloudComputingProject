@@ -4,12 +4,15 @@ import pandas as pd
 import plotly.express as px
 import re
 import streamlit as st
+import nltk
 
 from configuration import *
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from textblob import TextBlob
 
 st.title("Tweet Count")
+
+nltk.download("vader_lexicon")
 
 file = open("count_tweet_example.json", "r")
 count = json.loads(file.read())

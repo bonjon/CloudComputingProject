@@ -54,14 +54,14 @@ def get_df(bucket, option) -> pd.DataFrame:
             df_list.append(pd.DataFrame.from_dict(data["bars"]))
     logger.info("Got %d dataframe from S3 bucket", len(df_list))
     if len(df_list) >= 1:
-        return pd.concat(df_list)
+        return pd.concat(df_list).drop_duplicates(subset='t').sort_values(by='t')
     else:
         return None
 
 
 def RSI(close, n=14):
     delta = close.diff()
-    delta = delta[1:]
+    #delta = delta[1:]
     pricesUp = delta.copy()
     pricesDown = delta.copy()
     pricesUp[pricesUp < 0] = 0
